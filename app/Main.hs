@@ -18,6 +18,7 @@ main = do
        <$> switch ( long "verbose"
                  <> short 'v'
                  <> help "Verbose output?"
+                 <> long "say"
                   )
     )
     empty
