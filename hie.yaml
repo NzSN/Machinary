@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "Machinary:lib"
+
+    - path: "./app/Main.hs"
+      component: "Machinary:exe:Machinary-exe"
+
+    - path: "./app/Paths_Machinary.hs"
+      component: "Machinary:exe:Machinary-exe"
+
+    - path: "./test"
+      component: "Machinary:test:Machinary-test"
