@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Import
+      Machine.Types
       Run
       Types
       Util
@@ -36,6 +37,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.11 && <10
+    , options
     , rio >=0.1.12.0
   default-language: Haskell2010
 
@@ -49,6 +51,7 @@ executable Machinary-exe
   build-depends:
       Machinary
     , base >=4.11 && <10
+    , options
     , optparse-simple
     , rio >=0.1.12.0
   default-language: Haskell2010
@@ -66,5 +69,6 @@ test-suite Machinary-test
       Machinary
     , base >=4.11 && <10
     , hspec
+    , options
     , rio >=0.1.12.0
   default-language: Haskell2010
