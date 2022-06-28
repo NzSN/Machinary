@@ -5,7 +5,7 @@ module Machine.Types
     Operation(..),
     OpArgs,
     RemoteMachine(..),
-    Interface(..)
+    TransCtx(..)
   ) where
 
 type ConfigProc = String -> [String] -> Bool
@@ -35,7 +35,22 @@ data TransTCP m = TransTCP { ipaddr  :: String,
                              machine :: m
                            } deriving (Show, Eq)
 
+instance Functor TransTCP where
+  fmap f (TransTCP a p m) = TransTCP a p (f m)
+
+instance Applicative TransTCP where
+  pure = TransTCP "" 0
+  (TransTCP _ _ f) <*> (TransTCP a p m) = TransTCP a p $ f m
+
+instance Monad TransTCP where
+  return = pure
+  (TransTCP a p m) >>= f = TransTCP a p $ machine $ f m
+
 instance TransCtx TransTCP where
+  connect = undefined
+  disconnect = undefined
+  send = undefined
+  recv = undefined
 
 
 
