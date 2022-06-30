@@ -5,7 +5,7 @@ module Machine.Types
     Operation(..),
     OpArgs,
     RemoteMachine(..),
-    TransCtx(..)
+    CommuCtx(..)
   ) where
 
 type ConfigProc = String -> [String] -> Bool
@@ -22,43 +22,31 @@ class Operation op where
   (<-*>) :: Machine m => m -> op -> OpArgs -> m
 
 
-class Monad tr => TransCtx tr where
-  connect :: Machine m => tr m -> Maybe String
-  disconnect :: Machine m => tr m -> Maybe String
-  send :: Machine m => tr m -> a -> tr m
-  recv :: Machine m => tr m -> Maybe a
+class CommuCtx tr where
+  connect :: tr -> Maybe String
+  disconnect :: tr-> Maybe String
+  send :: tr -> a -> tr
+  recv :: tr -> Maybe a
 
 
 -- Concrete Interfaces
-data TransTCP m = TransTCP { ipaddr  :: String,
-                             port    :: Integer,
-                             machine :: m
+data TransTCP = TransTCP { ipaddr  :: String,
+                             port    :: Integer
                            } deriving (Show, Eq)
 
-instance Functor TransTCP where
-  fmap f (TransTCP a p m) = TransTCP a p (f m)
-
-instance Applicative TransTCP where
-  pure = TransTCP "" 0
-  (TransTCP _ _ f) <*> (TransTCP a p m) = TransTCP a p $ f m
-
-instance Monad TransTCP where
-  return = pure
-  (TransTCP a p m) >>= f = TransTCP a p $ machine $ f m
-
-instance TransCtx TransTCP where
+instance CommuCtx TransTCP where
   connect = undefined
   disconnect = undefined
   send = undefined
   recv = undefined
 
 
-
 -- Concrete Machines
 type Options = [(String, [String])]
 data RemoteMachine =
   RemoteMachine { ident :: String,
-                  options :: Options
+                  options :: Options,
+                  interface :: TransTCP
                 } deriving (Show, Eq)
 
 
