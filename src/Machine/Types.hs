@@ -1,5 +1,3 @@
-{-# LANGUAGE InstanceSigs #-}
-
 module Machine.Types
   ( Machine(..),
     Operation(..),
@@ -11,15 +9,15 @@ module Machine.Types
 type ConfigProc = String -> [String] -> Bool
 
 class Machine m where
-  init :: m -> m
-  term :: m -> m
-  config :: m
+  init :: m ctx -> m ctx
+  term :: m ctx -> m ctx
+  config :: m ctx
          -> ConfigProc
-         -> m
+         -> m ctx
 
 type OpArgs = [(String, String)]
 class Operation op where
-  (<-*>) :: Machine m => m -> op -> OpArgs -> m
+  (<-*>) :: Machine m => m ctx -> op -> OpArgs -> m ctx
 
 
 class CommuCtx tr where
@@ -43,19 +41,20 @@ instance CommuCtx TransTCP where
 
 -- Concrete Machines
 type Options = [(String, [String])]
-data RemoteMachine =
-  RemoteMachine { ident :: String,
-                  options :: Options,
-                  interface :: TransTCP
-                } deriving (Show, Eq)
+data RemoteMachine m =
+  RemoteMachine {
+    ident :: String,
+    options :: Options,
+    interface :: CommuCtx m => m
+    }
 
 
 instance Machine RemoteMachine where
-  init ::  RemoteMachine -> RemoteMachine
+  init ::  RemoteMachine m -> RemoteMachine m
   init = undefined
 
-  term :: RemoteMachine -> RemoteMachine
+  term :: RemoteMachine m -> RemoteMachine m
   term = undefined
 
-  config :: RemoteMachine -> ConfigProc -> RemoteMachine
+  config :: RemoteMachine m  -> ConfigProc -> RemoteMachine m
   config = undefined
