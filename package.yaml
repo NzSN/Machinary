@@ -59,6 +59,7 @@ tests:
     dependencies:
     - Machinary
     - hspec
+    - QuickCheck
 
     ghc-options:
     - -threaded
