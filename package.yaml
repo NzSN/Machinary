@@ -2,9 +2,9 @@ name:                Machinary
 version:             0.1.0.0
 github:              githubuser/Machinary
 license:             BSD3
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2022 Author name here
+author:              NzSN
+maintainer:          NzSN
+copyright:           2022 NzSN
 
 extra-source-files:
 - README.md
@@ -35,6 +35,9 @@ ghc-options:
 
 library:
   source-dirs: src
+  default-extensions:
+    - RankNTypes
+    - InstanceSigs
 
 executables:
   Machinary-exe:
