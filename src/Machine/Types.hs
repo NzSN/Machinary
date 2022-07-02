@@ -3,58 +3,49 @@ module Machine.Types
     Operation(..),
     OpArgs,
     RemoteMachine(..),
-    CommuCtx(..)
+    CommuCtx(..),
   ) where
 
-type ConfigProc = String -> [String] -> Bool
+import qualified Data.String as Str
+import qualified Data.ByteString as BStr
+
+type Opt = (String, [String])
+
+class CommuCtx tr where
+  connect :: tr dtype -> IO Bool
+  disconnect :: tr dtype-> IO Bool
+  send :: tr dtype -> dtype -> IO Bool
+  recv :: tr dtype -> IO dtype
+
 
 class Machine m where
-  init :: m ctx -> m ctx
-  term :: m ctx -> m ctx
-  config :: m ctx
-         -> ConfigProc
-         -> m ctx
+  init :: CommuCtx ctx => m ctx -> IO Bool
+  term :: CommuCtx ctx => m ctx -> IO Bool
+  config :: CommuCtx ctx
+         => m ctx
+         -> Opt
+         -> IO Bool
 
 type OpArgs = [(String, String)]
 class Operation op where
   (<-*>) :: Machine m => m ctx -> op -> OpArgs -> m ctx
 
-
-class CommuCtx tr where
-  connect :: tr -> Maybe String
-  disconnect :: tr-> Maybe String
-  send :: tr -> a -> tr
-  recv :: tr -> Maybe a
-
-
--- Concrete Interfaces
-data TransTCP = TransTCP { ipaddr  :: String,
-                             port    :: Integer
-                           } deriving (Show, Eq)
-
-instance CommuCtx TransTCP where
-  connect = undefined
-  disconnect = undefined
-  send = undefined
-  recv = undefined
-
-
 -- Concrete Machines
 type Options = [(String, [String])]
-data RemoteMachine m =
+data RemoteMachine i =
   RemoteMachine {
     ident :: String,
     options :: Options,
-    interface :: CommuCtx m => m
+    interface :: CommuCtx i => i BStr.ByteString
     }
 
 
 instance Machine RemoteMachine where
-  init ::  RemoteMachine m -> RemoteMachine m
-  init = undefined
+  init :: CommuCtx i => RemoteMachine i -> IO Bool
+  init m = send (interface m) $ Str.fromString "Init"
 
-  term :: RemoteMachine m -> RemoteMachine m
-  term = undefined
+  term :: CommuCtx i => RemoteMachine i -> IO Bool
+  term m = send (interface m) $ Str.fromString "Term"
 
-  config :: RemoteMachine m  -> ConfigProc -> RemoteMachine m
-  config = undefined
+  config :: CommuCtx i => RemoteMachine i -> Opt -> IO Bool
+  config m opt = send (interface m) $ Str.fromString $ show opt
