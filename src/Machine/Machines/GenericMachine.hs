@@ -7,7 +7,6 @@ module Machine.Machines.GenericMachine
   ) where
 
 import Prelude
-import qualified Network.Simple.TCP as Net
 import Machine.Types as MType (
   CommuCtx(..),
   Opt,
@@ -23,8 +22,7 @@ data GenericMachine i =
   GenericMachine {
     ident :: String,
     options :: Options,
-    interface :: i,
-    sock :: Net.Socket
+    interface :: i
     }
 
 
