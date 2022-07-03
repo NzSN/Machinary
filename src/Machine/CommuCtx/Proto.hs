@@ -2,6 +2,7 @@
 
 module Machine.CommuCtx.Proto
   ( EndPoint (..),
+    TransPort (..),
     send,
     recv,
     close
@@ -16,7 +17,7 @@ class TransPort p where
   recvTrans :: MonadIO m => p -> Int -> m (Maybe BStr.ByteString)
   closeTrans :: MonadIO m => p -> m ()
 
-newtype EndPoint tr = EndPoint { sock :: tr }
+newtype EndPoint tr = EndPoint { sock :: tr } deriving (Show, Eq)
 
 
 send :: (MonadIO m, TransPort tr) => EndPoint tr -> BStr.ByteString -> m ()

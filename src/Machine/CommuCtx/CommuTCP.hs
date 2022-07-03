@@ -7,6 +7,8 @@ module Machine.CommuCtx.CommuTCP
   ) where
 
 import Machine.Types (CommuCtx(..))
+import qualified Network.Simple.TCP as TCP
+import qualified Machine.CommuCtx.Proto as Proto
 
 
 data TranslayerProto = TCP | UDP deriving (Eq, Show)
@@ -17,7 +19,16 @@ data Address = TranslayerAddress
     proto  :: TranslayerProto
   } deriving (Show, Eq)
 
-newtype CommuTCP = CommuTCP { addr  :: Address } deriving (Show, Eq)
+newtype TCPSock = TCPSock { sock :: TCP.Socket } deriving (Show, Eq)
+instance Proto.TransPort TCPSock where
+  sendTrans = TCP.send . sock
+  recvTrans = TCP.recv . sock
+  closeTrans = TCP.closeSock . sock
+
+data CommuTCP = CommuTCP
+  { addr  :: Address,
+    endPoint :: Proto.EndPoint TCPSock
+  } deriving (Show, Eq)
 
 instance CommuCtx CommuTCP where
   connect = undefined
