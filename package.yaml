@@ -25,6 +25,7 @@ dependencies:
 - options
 - bytestring
 - aeson
+- network
 
 ghc-options:
 - -Wall
