@@ -28,13 +28,13 @@ data GenericMachine i =
 
 instance Machine GenericMachine where
   enable :: CommuCtx i => GenericMachine i -> IO Bool
-  enable m = send (interface m) $ serialize "Init"
+  enable m = send (interface m) (serialize "Init") >> return True
 
   disable :: CommuCtx i => GenericMachine i -> IO Bool
-  disable m = send (interface m) $ serialize "Term"
+  disable m = send (interface m) (serialize "Term") >> return True
 
   config :: CommuCtx i => GenericMachine i -> Opt -> IO Bool
-  config m opt = send (interface m) $ serialize $ show opt
+  config m opt = send (interface m) (serialize $ show opt) >> return True
 
   iface :: GenericMachine i -> i
   iface = interface

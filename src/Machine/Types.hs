@@ -34,7 +34,7 @@ instance Serializable BStr.ByteString where
 class CommuCtx tr where
   connect :: tr -> IO Bool
   disconnect :: tr -> IO Bool
-  send :: Serializable d => tr -> d -> IO Bool
+  send :: Serializable d => tr -> d -> IO Int
   recv :: Serializable d => tr -> IO d
 
 -- A Machine is a system that able to perform collection of

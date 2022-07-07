@@ -10,34 +10,33 @@ module Machine.CommuCtx.Proto
 
 import Prelude
 import qualified Data.ByteString as BStr
-import Control.Monad.IO.Class ( MonadIO )
 
 class TransPort p where
-  sendTrans :: MonadIO m => p -> BStr.ByteString -> m ()
-  recvTrans :: MonadIO m => p -> Int -> m (Maybe BStr.ByteString)
-  closeTrans :: MonadIO m => p -> m ()
+  sendTrans :: p -> BStr.ByteString -> IO Int
+  recvTrans :: p -> Int -> IO BStr.ByteString
+  closeTrans :: p -> IO ()
 
 newtype EndPoint tr = EndPoint { sock :: tr } deriving (Show, Eq)
 
 
-send :: (MonadIO m, TransPort tr) => EndPoint tr -> BStr.ByteString -> m ()
+send :: TransPort tr => EndPoint tr -> BStr.ByteString -> IO Int
 send = sendProto . sock
 
-recv :: (MonadIO m, TransPort tr) => EndPoint tr -> Int -> m (Maybe BStr.ByteString)
+recv :: TransPort tr => EndPoint tr -> Int -> IO BStr.ByteString
 recv = recvProto . sock
 
-close :: (MonadIO m, TransPort tr) => EndPoint tr -> m ()
+close :: TransPort tr => EndPoint tr -> IO ()
 close = closeProto . sock
 
 
-sendProto :: (MonadIO m, TransPort p) => p -> BStr.ByteString -> m ()
+sendProto :: TransPort p => p -> BStr.ByteString -> IO Int
 sendProto s bs = do
   sendTrans s bs
 
-recvProto :: (MonadIO m, TransPort p) => p -> Int -> m (Maybe BStr.ByteString)
+recvProto :: TransPort p => p -> Int -> IO BStr.ByteString
 recvProto s n = do
   recvTrans s n
 
-closeProto :: (MonadIO m, TransPort p) => p -> m ()
+closeProto :: TransPort p => p -> IO ()
 closeProto s = do
   closeTrans s

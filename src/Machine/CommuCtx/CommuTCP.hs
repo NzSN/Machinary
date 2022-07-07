@@ -6,8 +6,9 @@ module Machine.CommuCtx.CommuTCP
     TranslayerProto (..)
   ) where
 
-import Machine.Types (CommuCtx(..))
-import qualified Network.Simple.TCP as TCP
+import Machine.Types (CommuCtx(..), Serializable(..))
+import qualified Network.Socket as Sock
+import qualified Network.Socket.ByteString as SBStr
 import qualified Machine.CommuCtx.Proto as Proto
 
 
@@ -19,11 +20,11 @@ data Address = TranslayerAddress
     proto  :: TranslayerProto
   } deriving (Show, Eq)
 
-newtype TCPSock = TCPSock { sock :: TCP.Socket } deriving (Show, Eq)
+newtype TCPSock = TCPSock { sock :: Sock.Socket } deriving (Show, Eq)
 instance Proto.TransPort TCPSock where
-  sendTrans = TCP.send . sock
-  recvTrans = TCP.recv . sock
-  closeTrans = TCP.closeSock . sock
+  sendTrans = SBStr.send . sock
+  recvTrans = SBStr.recv . sock
+  closeTrans = Sock.close . sock
 
 data CommuTCP = CommuTCP
   { addr  :: Address,
@@ -34,7 +35,9 @@ instance CommuCtx CommuTCP where
   connect = undefined
   disconnect = undefined
 
-  send :: CommuTCP -> d -> IO Bool
-  send _ _ = undefined
+  send :: Serializable d => CommuTCP -> d -> IO Int
+  send (CommuTCP _ e) d = do
+    let bstr = serialize d
+    Proto.send e bstr
 
   recv = undefined

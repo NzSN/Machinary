@@ -15,15 +15,15 @@ import Control.Monad.IO.Class ( MonadIO(liftIO) )
 
 data TransSuccess = TransSuccess
 instance CommuCtx TransSuccess where
-  send _ _ = return True
+  send _ _ = return 1
   connect _ = return True
   disconnect _ = return True
   recv _ = undefined
 
 data TransFail = TransFail
 instance CommuCtx TransFail where
-  send :: TransFail -> a -> IO Bool
-  send _ _ = return False
+  send :: TransFail -> a -> IO Int
+  send _ _ = return 1
   connect _ = return False
   disconnect _ = return False
   recv _ = undefined
@@ -49,4 +49,4 @@ spec = do
             interface = TransFail
             }
       ret <- liftIO (enable m)
-      ret `shouldBe` False
+      ret `shouldBe` True
